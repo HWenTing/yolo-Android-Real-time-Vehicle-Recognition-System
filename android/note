@@ -1,0 +1,57 @@
+DetectorActivity
+修改74行文件地址
+修改87行mode
+
+TensorFlowYoloDetector
+修改38行NUM_CLASSES
+修改51行LABELS
+
+
+感觉的问题是
+1、可能只有tiny-yolov1可以运行(tiny_yolo3可以运行，但是没有效果)
+2、我在转化权重的时候出现了问题，有些信息没有保存
+3、检测速度很快，但是在手机上显示的速度很慢，就出现类似卡顿那样
+
+在替换了权重之后，需要看一下出入输出否对应
+DetectorActivity中YOLO_INPUT_NAME和YOLO_OUTPUT_NAMES是否与自己的结构对应（可以用tensorboard可视化一下网络结构）
+
+关键变量
+DetectorActivity
+YOLO_BLOCK_SIZE
+MINIMUM_CONFIDENCE_YOLO
+
+
+TensorFlowYoloDetector
+MAX_RESULTS
+NUM_BOXES_PER_BLOCK 这个似乎是论文提到的...
+ANCHORS这个需要调整吗
+
+
+log解读
+2019-06-25 16:51:33.880 22276-22276/org.tensorflow.demo I/tensorflow: DetectorActivity: Preparing image 1813 for detection in bg thread.
+2019-06-25 16:51:33.908 22276-22335/org.tensorflow.demo I/tensorflow: DetectorActivity: Running detection on image 1813
+2019-06-25 16:51:33.954 22276-22335/org.tensorflow.demo I/tensorflow: recognizeImage: ready for inference: cpu=45ms wall=45ms
+2019-06-25 16:51:34.201 22276-22335/org.tensorflow.demo I/tensorflow: recognizeImage: ran inference: cpu=42ms wall=248ms
+2019-06-25 16:51:33.875 22276-22335/org.tensorflow.demo I/tensorflow: TensorFlowYoloDetector: Bus (0) 0.083333 RectF(293.91998, 217.92, 415.0, 415.0)
+2019-06-25 16:51:33.875 22276-22335/org.tensorflow.demo I/tensorflow: TensorFlowYoloDetector: Bus (0) 0.083333 RectF(249.28, 318.24, 415.0, 415.0)
+2019-06-25 16:51:33.875 22276-22335/org.tensorflow.demo I/tensorflow: TensorFlowYoloDetector: Bus (0) 0.083333 RectF(134.07999, 231.68, 415.0, 415.0)
+2019-06-25 16:51:33.875 22276-22335/org.tensorflow.demo I/tensorflow: recognizeImage: decoded results: cpu=52ms wall=10057ms
+2019-06-25 16:51:33.875 22276-22335/org.tensorflow.demo I/tensorflow: recognizeImage: processed results: cpu=0ms wall=0ms
+2019-06-25 16:51:33.876 22276-22335/org.tensorflow.demo I/tensorflow: MultiBoxTracker: Processing 0 results from 1527
+
+
+问题全部解决，总结一下
+下载好tensorflow demo后
+DetectorActivity
+修改74行文件地址
+修改87行mode
+修改 YOLO_INPUT_NAME和YOLO_OUTPUT_NAMES是否与自己的结构对应
+
+
+TensorFlowYoloDetector
+修改38行NUM_CLASSES
+修改51行LABELS
+修改40行NUM_BOXES_PER_BLOCK=3
+
+
+整个过程的网络结构要保持一致，NUM_BOXES_PER_BLOCK*（5*class_number）要保持一致
